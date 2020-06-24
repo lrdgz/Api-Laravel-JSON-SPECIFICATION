@@ -7,6 +7,9 @@ use Tests\TestCase;
 
 class {{ class }} extends TestCase
 {
+
+    use RefreshDatabase;
+
     /**
      * @test
      */
