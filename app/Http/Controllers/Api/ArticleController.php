@@ -13,24 +13,8 @@ use Illuminate\Support\Str;
 class ArticleController extends Controller
 {
     public function index(){
-
-        $sortFields = Str::of(request('sort'))->explode(',');
-        $articleQuery = Article::query();
-
-        foreach ($sortFields as $sortField){
-            $direction = 'asc';
-
-            if(Str::of($sortField)->startsWith('-')){
-                $direction = 'desc';
-                $sortField = Str::of($sortField)->substr(1);
-            }
-
-            $articleQuery->orderBy($sortField, $direction);
-        }
-
-        return ArticleCollection::make(
-            $articleQuery->get()
-        );
+        $articles = Article::applySorts(request('sort'))->get();
+        return ArticleCollection::make($articles);
     }
 
     public function show(Article $article){
