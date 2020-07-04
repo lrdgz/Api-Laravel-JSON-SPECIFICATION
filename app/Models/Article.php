@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasSorts;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use \Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 
 class Article extends Model
 {
 
+    use HasSorts;
     public $allowedSorts = ['title', 'content'];
 
     /**
@@ -39,30 +40,6 @@ class Article extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function scopeApplySorts(Builder $query, $sort){
-
-        if (is_null($sort)){
-            return;
-        }
-
-        $sortFields = Str::of($sort)->explode(',');
-
-        foreach ($sortFields as $sortField){
-            $direction = 'asc';
-
-            if(Str::of($sortField)->startsWith('-')){
-                $direction = 'desc';
-                $sortField = Str::of($sortField)->substr(1);
-            }
-
-            if( ! collect($this->allowedSorts)->contains($sortField) ){
-                abort(400, "Invalid Query Parameters, {$sortField} is not allowed.");
-            }
-
-            $query->orderBy($sortField, $direction);
-        }
     }
 
 }
