@@ -48,4 +48,27 @@ class SortArticlesTest extends TestCase
         ]);
 
     }
+
+    /**
+     * @test
+     */
+
+    public function it_can_sort_articles_by_title_and_content() : void
+    {
+        factory(Article::class)->create(['title' => 'C Title', 'content' => 'C Content']);
+        factory(Article::class)->create(['title' => 'A Title', 'content' => 'A Content']);
+        factory(Article::class)->create(['title' => 'B Title', 'content' => 'B Content']);
+
+//        \DB::listen(function ($db) {
+//            dump($db->sql);
+//        });
+
+        $url = route('api.v1.articles.index', ['sort' => 'title,content']);
+        $this->getJson($url)->assertSeeInOrder([
+            'A Title',
+            'B Title',
+            'C Title'
+        ]);
+
+    }
 }
