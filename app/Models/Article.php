@@ -9,6 +9,9 @@ use Illuminate\Support\Str;
 
 class Article extends Model
 {
+
+    public $allowedSorts = ['title', 'content'];
+
     /**
      * The attributes that aren't mass assignable.
      *
@@ -40,6 +43,10 @@ class Article extends Model
 
     public function scopeApplySorts(Builder $query, $sort){
 
+        if (is_null($sort)){
+            return;
+        }
+
         $sortFields = Str::of($sort)->explode(',');
 
         foreach ($sortFields as $sortField){
@@ -48,6 +55,10 @@ class Article extends Model
             if(Str::of($sortField)->startsWith('-')){
                 $direction = 'desc';
                 $sortField = Str::of($sortField)->substr(1);
+            }
+
+            if( ! collect($this->allowedSorts)->contains($sortField) ){
+                abort(400, "Invalid Query Parameters, {$sortField} is not allowed.");
             }
 
             $query->orderBy($sortField, $direction);

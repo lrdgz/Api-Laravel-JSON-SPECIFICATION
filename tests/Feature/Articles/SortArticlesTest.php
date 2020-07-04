@@ -55,9 +55,9 @@ class SortArticlesTest extends TestCase
 
     public function it_can_sort_articles_by_title_and_content() : void
     {
-        factory(Article::class)->create(['title' => 'C Title', 'content' => 'C Content']);
-        factory(Article::class)->create(['title' => 'A Title', 'content' => 'A Content']);
-        factory(Article::class)->create(['title' => 'B Title', 'content' => 'B Content']);
+        factory(Article::class)->create(['title' => 'C Title', 'content' => 'B Content']);
+        factory(Article::class)->create(['title' => 'A Title', 'content' => 'C Content']);
+        factory(Article::class)->create(['title' => 'B Title', 'content' => 'D Content']);
 
 //        \DB::listen(function ($db) {
 //            dump($db->sql);
@@ -70,5 +70,22 @@ class SortArticlesTest extends TestCase
             'C Title'
         ]);
 
+//        $url = route('api.v1.articles.index', ['sort' => '-content,title']);
+//        $this->getJson($url)->assertSeeInOrder([
+//            'D Title',
+//            'C Title',
+//            'B Title'
+//        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_cannot_sort_articles_by_unknown_fields() : void
+    {
+        factory(Article::class)->times(3)->create();
+
+        $url = route('api.v1.articles.index', ['sort' => 'unknown']);
+        $this->getJson($url)->assertStatus(400);
     }
 }
