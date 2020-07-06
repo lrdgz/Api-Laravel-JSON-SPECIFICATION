@@ -10,7 +10,7 @@ use \Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Article extends Model
 {
 
-    use HasSorts;
+//    use HasSorts;
     public $allowedSorts = ['title', 'content'];
 
     /**
