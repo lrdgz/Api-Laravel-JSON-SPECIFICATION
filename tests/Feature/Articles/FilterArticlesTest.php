@@ -117,4 +117,68 @@ class FilterArticlesTest extends TestCase
         $this->getJson($url)->assertStatus(400);
     }
 
+    /**
+     * @test
+     */
+    public function can_filter_articles_by_filter_and_content() : void
+    {
+        factory(Article::class)->create([
+            'title' => 'Article From Laravel',
+            'content' => 'Content'
+        ]);
+
+        factory(Article::class)->create([
+            'title' => 'Another Article',
+            'content' => 'Content Laravel...'
+        ]);
+
+        factory(Article::class)->create([
+            'title' => 'Title 2',
+            'content' => 'Content 2'
+        ]);
+
+        $url = route('api.v1.articles.index', ['filter[search]' => 'Laravel']);
+
+        $this->getJson($url)
+            ->assertJsonCount(2, 'data')
+            ->assertSee('Article From Laravel')
+            ->assertSee('Another Article')
+            ->assertDontSee('Title 2');
+    }
+
+    /**
+     * @test
+     */
+    public function can_filter_articles_by_filter_and_content_with_multiple_terms() : void
+    {
+        factory(Article::class)->create([
+            'title' => 'Article From Laravel',
+            'content' => 'Content'
+        ]);
+
+        factory(Article::class)->create([
+            'title' => 'Another Article Mysql',
+            'content' => 'Content Mysql...'
+        ]);
+
+        factory(Article::class)->create([
+            'title' => 'Another Article',
+            'content' => 'Content Laravel...'
+        ]);
+
+        factory(Article::class)->create([
+            'title' => 'Title 2',
+            'content' => 'Content 2'
+        ]);
+
+        $url = route('api.v1.articles.index', ['filter[search]' => 'Laravel Mysql']);
+
+        $this->getJson($url)
+            ->assertJsonCount(3, 'data')
+            ->assertSee('Article From Laravel')
+            ->assertSee('Another Article')
+            ->assertSee('Another Article Mysql')
+            ->assertDontSee('Title 2');
+    }
+
 }
