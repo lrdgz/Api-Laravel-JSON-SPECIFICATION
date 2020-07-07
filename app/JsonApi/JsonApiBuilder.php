@@ -53,10 +53,12 @@ class JsonApiBuilder
     public function applyFilters(){
         return function (){
             foreach (request('filter', []) as $filter => $value){
-                $scope = "scope" . ucfirst($filter);
-                if (!method_exists($this->model, $scope)){
-                    abort(400, "The filter '{$filter}' is not allowed");
-                }
+                abort_unless(
+                    $this->hasNamedScope($filter),
+                    400,
+                    "The filter '{$filter}' is not allowed"
+                );
+
                 $this->{$filter}($value);
             }
             return $this;
