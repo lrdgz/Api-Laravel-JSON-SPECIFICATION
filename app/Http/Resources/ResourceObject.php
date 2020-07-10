@@ -15,15 +15,11 @@ class ResourceObject extends JsonResource
     public function toArray($request)
     {
         return [
-            'type' => 'articles',
+            'type' => $this->resource->type,
             'id'    => (string) $this->resource->getRouteKey(),
-            'attributes' => [
-                'title' => $this->resource->title,
-                'slug' => $this->resource->slug,
-                'content' => $this->resource->content,
-            ],
+            'attributes' => $this->resource->fields(),
             'links' => [
-                'self' => url('/api/v1/articles/' . $this->resource->getRouteKey())
+                'self' => url("/api/v1/{$this->resource->type}/{$this->resource->getRouteKey()}")
             ]
         ];
     }
